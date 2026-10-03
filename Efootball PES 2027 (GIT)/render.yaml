@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: efootball-pes-2027
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn efootball:app
+    envVars:
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: GOOGLE_CLIENT_ID
+        sync: false

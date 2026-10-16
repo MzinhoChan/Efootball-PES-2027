@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" fill="none">
+  <defs>
+    <linearGradient id="roof" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff" stop-opacity=".18"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <linearGradient id="field" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff" stop-opacity=".04"/><stop offset="1" stop-color="#fff" stop-opacity=".12"/></linearGradient>
+    <radialGradient id="lights"><stop stop-color="#fff" stop-opacity=".28"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  </defs>
+  <path d="M0 0H1600V240L1300 320 800 260 300 320 0 240Z" fill="url(#roof)" opacity=".22"/>
+  <path d="M0 185 350 300 800 250 1250 300 1600 185V365L1200 430 800 385 400 430 0 365Z" fill="#fff" fill-opacity=".035"/>
+  <path d="M0 365 400 430 800 385 1200 430 1600 365V520L1120 570 800 545 480 570 0 520Z" fill="#fff" fill-opacity=".035"/>
+  <path d="M0 900V575L420 610 800 590 1180 610 1600 575V900Z" fill="url(#field)"/>
+  <path d="M0 900 420 610M1600 900 1180 610M800 590V900M420 610H1180" stroke="#fff" stroke-opacity=".10" stroke-width="3"/>
+  <ellipse cx="190" cy="190" rx="250" ry="125" fill="url(#lights)"/>
+  <ellipse cx="1410" cy="190" rx="250" ry="125" fill="url(#lights)"/>
+  <g fill="#fff" fill-opacity=".20">
+    <circle cx="70" cy="145" r="5"/><circle cx="100" cy="145" r="5"/><circle cx="130" cy="145" r="5"/><circle cx="160" cy="145" r="5"/><circle cx="190" cy="145" r="5"/><circle cx="220" cy="145" r="5"/><circle cx="250" cy="145" r="5"/>
+    <circle cx="1350" cy="145" r="5"/><circle cx="1380" cy="145" r="5"/><circle cx="1410" cy="145" r="5"/><circle cx="1440" cy="145" r="5"/><circle cx="1470" cy="145" r="5"/><circle cx="1500" cy="145" r="5"/><circle cx="1530" cy="145" r="5"/>
+  </g>
+</svg>

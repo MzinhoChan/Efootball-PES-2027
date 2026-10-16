@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eFootball PES 2027 1.6</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css?v=1.6-layout-fix-3">
+
+<style>
+.bal-tab{padding:.65rem .75rem;border-radius:.7rem;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#94a3b8;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);transition:.2s}.bal-tab:hover{color:#fff;background:rgba(255,255,255,.06)}.bal-tab.active{color:#67e8f9;background:rgba(6,182,212,.12);border-color:rgba(34,211,238,.35)}.bal-panel{display:none}.bal-panel.bal-active{display:block}
+.master-tab{padding:.7rem .8rem;border-radius:.75rem;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.035em;color:#94a3b8;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);transition:.2s}.master-tab:hover{color:#fff;background:rgba(255,255,255,.06)}.master-tab.active{color:#67e8f9;background:rgba(6,182,212,.12);border-color:rgba(34,211,238,.35)}.master-panel{display:none}.master-panel.master-active{display:block}</style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen">
+
+    <!-- TELA DE AUTENTICAÇÃO -->
+    <div id="auth-screen" class="min-h-screen flex justify-center items-center p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950">
+        <div class="auth-shell w-full max-w-md">
+            <div class="auth-glow"></div>
+            <div class="auth-panel bg-slate-900/90 border border-white/10 p-7 md:p-8 rounded-3xl w-full shadow-2xl backdrop-blur-xl relative overflow-hidden">
+                <div class="absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
+                <div class="relative text-center mb-6">
+                    <div class="auth-logo mx-auto mb-4"><i class="fa-solid fa-futbol"></i></div>
+                    <h1 class="text-2xl md:text-3xl font-black text-white tracking-tight">eFootball <span class="text-cyan-400">PES 2027</span></h1>
+                    <p class="text-xs text-slate-400 mt-2">Gerenciador completo de carreiras</p>
+                </div>
+
+                <div class="relative space-y-4">
+                    <div id="google-login-area" class="google-login-area">
+                        <div id="google-button" class="flex justify-center min-h-[44px]"></div>
+                        <p id="google-status" class="text-[11px] text-slate-500 text-center mt-2">Entre com sua Conta do Google para criar ou acessar sua conta.</p>
+                    </div>
+
+                    <div class="auth-divider"><span>ou use e-mail e senha</span></div>
+
+                    <form onsubmit="handleAuth(event)" class="space-y-3">
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-1">E-mail ou Usuário</label>
+                            <input type="text" id="auth-email" required placeholder="seuemail@gmail.com" class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-cyan-500">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-1">Senha</label>
+                            <input type="password" id="auth-password" required placeholder="Digite sua senha" minlength="4" class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-cyan-500">
+                        </div>
+                        <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black py-3 rounded-xl text-sm transition-all shadow-lg shadow-cyan-500/20">
+                            <i class="fa-solid fa-right-to-bracket mr-1"></i> Entrar / Criar Conta
+                        </button>
+                    </form>
+
+                    <div class="text-center pt-2">
+                        <p class="text-[10px] text-slate-600">Login Google validado pelo servidor • Seus dados de carreira continuam no navegador.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MENU PRINCIPAL -->
+    <div id="main-menu" class="hidden min-h-screen w-full justify-center items-center p-4 md:p-8 bg-[radial-gradient(circle_at_top,rgba(14,165,233,.16),transparent_35%),linear-gradient(135deg,#020617,#0f172a_55%,#082f49)]">
+        <div class="w-full max-w-6xl">
+            <div class="main-menu-top flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+                <div class="text-center md:text-left">
+                    <div class="flex items-center justify-center md:justify-start gap-3">
+                        <div class="menu-brand-icon"><i class="fa-solid fa-futbol"></i></div>
+                        <div>
+                            <p class="text-xs text-cyan-400 font-black uppercase tracking-[.25em]">PES 2027 CAREER HUB</p>
+                            <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">eFootball PES 2027 <span class="text-cyan-400" id="project-version">1.6</span></h1>
+                    <p class="text-sm text-slate-400 mt-1 font-semibold">Career Hub • escolha seu modo de jogo</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-400 mt-3">Olá, <span id="menu-user-display" class="text-white font-bold"></span>. O que você quer jogar hoje?</p>
+                </div>
+                <button onclick="logout()" class="menu-logout"><i class="fa-solid fa-right-from-bracket mr-2"></i>Sair</button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <button onclick="openMode('rumo_ao_estrelato')" class="mode-card mode-card-rumo group text-left">
+                    <div class="mode-card-bg"></div>
+                    <div class="relative z-10">
+                        <div class="mode-card-top"><span class="mode-pill">JOGADOR</span><span class="mode-arrow"><i class="fa-solid fa-arrow-up-right-from-square"></i></span></div>
+                        <div class="mode-icon-large text-cyan-300"><i class="fa-solid fa-person-running"></i></div>
+                        <h2>Become a Legend</h2>
+                        <p>Viva a carreira do seu jogador: clubes, partidas, gols, assistências, títulos, transferências, popularidade, seleção, temporadas, prêmios, lesões e eventos.</p>
+                        <div class="mode-feature-row"><span><i class="fa-solid fa-chart-line"></i> Estatísticas</span><span><i class="fa-solid fa-trophy"></i> Títulos</span><span><i class="fa-solid fa-clock-rotate-left"></i> Temporadas</span></div>
+                        <div class="mode-enter">Selecionar Become a Legend <i class="fa-solid fa-arrow-right ml-2"></i></div>
+                    </div>
+                </button>
+
+                <button onclick="openMode('master_liga')" class="mode-card mode-card-master group text-left">
+                    <div class="mode-card-bg"></div>
+                    <div class="relative z-10">
+                        <div class="mode-card-top"><span class="mode-pill mode-pill-gold">TREINADOR</span><span class="mode-arrow"><i class="fa-solid fa-arrow-up-right-from-square"></i></span></div>
+                        <div class="mode-icon-large text-amber-300"><i class="fa-solid fa-chess-king"></i></div>
+                        <h2>Master Liga</h2>
+                        <p>Comande um clube: temporadas, calendário, mercado, objetivos, finanças, diretoria, torcida, troféus, notícias e histórico da carreira.</p>
+                        <div class="mode-feature-row"><span><i class="fa-solid fa-calendar-days"></i> Temporadas</span><span><i class="fa-solid fa-arrow-right-arrow-left"></i> Mercado</span><span><i class="fa-solid fa-newspaper"></i> Notícias</span></div>
+                        <div class="mode-enter">Selecionar Master Liga <i class="fa-solid fa-arrow-right ml-2"></i></div>
+                    </div>
+                </button>
+            </div>
+
+            <div class="mt-7 flex flex-wrap justify-center gap-3 text-[11px] text-slate-500">
+                <span><i class="fa-solid fa-calendar-days mr-1"></i>Calendário</span>
+                <span>•</span><span><i class="fa-solid fa-medal mr-1"></i>Recordes</span>
+                <span>•</span><span><i class="fa-solid fa-cloud-arrow-up mr-1"></i>Backup</span>
+                <span>•</span><span>eFootball PES 2027</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA PRINCIPAL DA APLICAÇÃO -->
+    <div id="app-screen" class="hidden min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-6">
+        
+        <!-- NAVBAR HÍBRIDA / NAVEGAÇÃO -->
+        <header class="bg-slate-900/60 border border-white/10 rounded-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl backdrop-blur-md">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-trophy text-amber-400 text-2xl"></i>
+                <div>
+                    <h1 class="font-black text-white text-lg tracking-wide" id="mode-title">Become a Legend (Jogador)</h1>
+                    <p class="text-xs text-slate-400">Usuário: <span id="user-display" class="text-cyan-400 font-medium"></span></p>
+                </div>
+            </div>
+
+            <!-- CHAVEADOR DE MODO -->
+            <div class="flex items-center bg-black/40 border border-white/5 p-1 rounded-xl w-full md:w-auto">
+                <button id="btn-rumo" onclick="switchMode('rumo_ao_estrelato')" class="btn-mode flex-1 md:flex-none px-5 py-2.5 rounded-lg font-bold text-xs uppercase tracking-wider transition-all bg-cyan-500/20 text-cyan-400 border border-cyan-500/40">
+                    Become a Legend
+                </button>
+                <button id="btn-master" onclick="switchMode('master_liga')" class="btn-mode flex-1 md:flex-none px-5 py-2.5 rounded-lg font-bold text-xs uppercase tracking-wider transition-all text-slate-400 hover:text-white">
+                    Master Liga
+                </button>
+            </div>
+
+            <button onclick="openCurrencyModal()" class="px-4 py-2.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-300 text-xs font-bold transition-all">
+                <i class="fa-solid fa-coins mr-1"></i> Moeda: <span id="currency-display">R$</span>
+            </button>
+
+            <div class="flex items-center gap-2">
+                <button onclick="backToMainMenu()" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold transition-all"><i class="fa-solid fa-house mr-1"></i> Menu</button>
+                <button onclick="openSaveMenuModal()" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold transition-all"><i class="fa-solid fa-cloud-arrow-up mr-1"></i> Salvar</button>
+                <button onclick="logout()" class="p-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-bold transition-all"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </header>
+
+        <!-- SELETOR E GERENCIADOR DE CARREIRA -->
+        <div class="bg-slate-900/60 border border-white/10 rounded-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl backdrop-blur-md">
+            <div class="flex items-center gap-3 w-full md:w-auto flex-wrap">
+                <label class="text-xs text-slate-400 font-bold uppercase tracking-wider">Carreira:</label>
+                <select id="select-career" onchange="changeCareer()" class="flex-1 md:w-64 bg-black/40 border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    <!-- Opções geradas via JS -->
+                </select>
+            </div>
+            <div class="flex items-center gap-2 w-full md:w-auto justify-end flex-wrap">
+                <button id="league-tab-button" onclick="openLeagueSelector()" class="px-4 py-2 rounded-lg bg-violet-500/15 hover:bg-violet-500/25 text-violet-200 border border-violet-400/25 text-xs font-bold transition-all"><i class="fa-solid fa-earth-europe mr-1"></i> Ligas</button>
+                <button onclick="openCareerModal()" class="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition-all"><i class="fa-solid fa-plus mr-1"></i> Nova Carreira</button>
+                <button onclick="openSaveManagerModal()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 text-xs font-bold transition-all"><i class="fa-solid fa-folder-open mr-1"></i> Gerenciar Saves</button>
+                <button onclick="openDeleteCareerModal()" class="px-3 py-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-bold transition-all"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+
+        <!-- NAVEGAÇÃO INTERNA - BECOME A LEGEND -->
+        <div id="bal-tabs" class="bal-tabs hidden bg-slate-900/60 border border-white/10 rounded-2xl p-2 shadow-xl backdrop-blur-md">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
+                <button onclick="switchBALTab('overview')" data-bal-tab="overview" class="bal-tab active"><i class="fa-solid fa-house mr-1"></i> Visão Geral</button>
+                <button onclick="switchBALTab('profile')" data-bal-tab="profile" class="bal-tab"><i class="fa-solid fa-user mr-1"></i> Perfil & Staff</button>
+                <button onclick="switchBALTab('stats')" data-bal-tab="stats" class="bal-tab"><i class="fa-solid fa-chart-line mr-1"></i> Estatísticas</button>
+                <button onclick="switchBALTab('titles')" data-bal-tab="titles" class="bal-tab"><i class="fa-solid fa-trophy mr-1"></i> Títulos</button>
+                <button onclick="switchBALTab('events')" data-bal-tab="events" class="bal-tab"><i class="fa-solid fa-bolt mr-1"></i> Eventos</button>
+            </div>
+        </div>
+
+        <!-- NAVEGAÇÃO INTERNA - MASTER LIGA -->
+        <div id="master-tabs" class="hidden bg-slate-900/60 border border-white/10 rounded-2xl p-2 shadow-xl backdrop-blur-md">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
+                <button onclick="switchMasterTab('overview')" data-master-tab="overview" class="master-tab active"><i class="fa-solid fa-house mr-1"></i> Visão Geral</button>
+                <button onclick="switchMasterTab('club')" data-master-tab="club" class="master-tab"><i class="fa-solid fa-building mr-1"></i> Clube</button>
+                <button onclick="switchMasterTab('season')" data-master-tab="season" class="master-tab"><i class="fa-solid fa-calendar-days mr-1"></i> Temporada</button>
+                <button onclick="switchMasterTab('objectives')" data-master-tab="objectives" class="master-tab"><i class="fa-solid fa-bullseye mr-1"></i> Objetivos</button>
+                <button onclick="switchMasterTab('history')" data-master-tab="history" class="master-tab"><i class="fa-solid fa-trophy mr-1"></i> Títulos & História</button>
+            </div>
+        </div>
+
+        <!-- Os módulos novos são renderizados pelo JavaScript conforme modo e aba. -->
+        <!-- Os recursos 1.6 são renderizados pelo JavaScript somente dentro da visão geral da carreira. -->
+        <div id="new-features-container" data-bal-panel="overview" class="career-features-host" style="display:none;width:100%;max-width:100%;min-width:0;grid-column:1 / -1;align-self:stretch;box-sizing:border-box;margin-top:24px;"></div>
+
+        <!-- SEÇÃO: PERFIL PESSOAL DO ATLETA (EXCLUSIVO BECOME A LEGEND) -->
+        <div id="player-profile-card" data-bal-panel="profile" class="bal-panel bg-slate-900/60 border border-white/10 rounded-2xl p-5 shadow-xl backdrop-blur-md">
+            <div class="flex justify-between items-center border-b border-white/5 pb-3 mb-4">
+                <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-user text-cyan-400"></i> Perfil Pessoal & Staff
+                </h2>
+                <button onclick="openProfileModal()" class="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold border border-white/10 transition-all">
+                    <i class="fa-solid fa-pen mr-1"></i> Editar Perfil
+                </button>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-9 gap-4 text-xs">
+                <div><span class="text-slate-400 block">Idade Atual:</span><strong id="prof-idade" class="text-cyan-400 font-bold font-mono">-</strong></div>
+                <div><span class="text-slate-400 block">Nº da Camisa:</span><strong id="prof-camisa" class="text-amber-300 font-bold font-mono">-</strong></div>
+                <div><span class="text-slate-400 block">Posição:</span><strong id="prof-posicao" class="text-white">-</strong></div>
+                <div><span class="text-slate-400 block">Nacionalidade:</span><strong id="prof-nacionalidade" class="text-white">-</strong></div>
+                <div><span class="text-slate-400 block">Empresário:</span><strong id="prof-empresario" class="text-white">-</strong></div>
+                <div><span class="text-slate-400 block">Pai:</span><strong id="prof-pai" class="text-white">-</strong></div>
+                <div><span class="text-slate-400 block">Mãe:</span><strong id="prof-mae" class="text-white">-</strong></div>
+                <div><span class="text-slate-400 block">Irmão:</span><strong id="prof-irmao" class="text-white">-</strong></div>
+                <div><span class="text-slate-400 block">Namorada:</span><strong id="prof-namorada" class="text-white">-</strong></div>
+            </div>
+        </div>
+
+        <!-- GALERIA DE TITULOS ABAIXO DO PERFIL -->
+        <div id="bal-titles-section" data-bal-panel="titles" class="bal-panel">
+        <div class="bg-slate-900/60 border border-white/10 rounded-2xl p-5 shadow-xl backdrop-blur-md space-y-4">
+            <div class="flex justify-between items-center border-b border-white/5 pb-3">
+                <h3 class="font-bold text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-award text-amber-400"></i> Galeria de Títulos
+                </h3>
+                <span class="text-xs font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-lg">Total: <strong id="total-trophies-count">0</strong></span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-3 text-center text-xs">
+                <div class="bg-black/30 border border-white/5 rounded-xl p-3">
+                    <i class="fa-solid fa-shield text-cyan-400 text-lg mb-1 block"></i>
+                    <span class="text-slate-400 block">Liga Nacional</span>
+                    <strong id="trophy-liga-count" class="text-white text-sm">0</strong>
+                </div>
+                <div class="bg-black/30 border border-white/5 rounded-xl p-3">
+                    <i class="fa-solid fa-earth-americas text-blue-400 text-lg mb-1 block"></i>
+                    <span class="text-slate-400 block">Copa Intercontinental</span>
+                    <strong id="trophy-continental-count" class="text-white text-sm">0</strong>
+                </div>
+                <div class="bg-black/30 border border-white/5 rounded-xl p-3">
+                    <i class="fa-solid fa-wine-glass text-rose-400 text-lg mb-1 block"></i>
+                    <span class="text-slate-400 block">Copa da Liga</span>
+                    <strong id="trophy-copa-count" class="text-white text-sm">0</strong>
+                </div>
+                <div class="bg-black/30 border border-white/5 rounded-xl p-3">
+                    <i class="fa-solid fa-globe text-emerald-400 text-lg mb-1 block"></i>
+                    <span class="text-slate-400 block">Mundial</span>
+                    <strong id="trophy-mundial-count" class="text-white text-sm">0</strong>
+                </div>
+                <div class="bg-black/30 border border-white/5 rounded-xl p-3">
+                    <i class="fa-solid fa-bolt text-amber-400 text-lg mb-1 block"></i>
+                    <span class="text-slate-400 block">Supercopas</span>
+                    <strong id="trophy-supercopa-count" class="text-white text-sm">0</strong>
+                </div>
+                <div id="trophy-individual-card" class="bg-black/30 border border-white/5 rounded-xl p-3">
+                    <i class="fa-solid fa-star text-purple-400 text-lg mb-1 block"></i>
+                    <span class="text-slate-400 block">Individuais</span>
+                    <strong id="trophy-individual-count" class="text-white text-sm">0</strong>
+                </div>
+            </div>
+        </div>
+
+</div>
+
+
+        <!-- SEÇÃO EXCLUSIVA: BECOME A LEGEND (TÉCNICO, MERCADO E PATROCÍNIO) -->
+        <section id="be-a-legend-exclusive-section" class="space-y-6">
+            
+            <!-- PATROCÍNIO DE CHUTEIRA -->
+            <div data-bal-panel="profile" class="bal-panel lifestyle-section bg-slate-900/60 border border-white/10 rounded-2xl p-5 shadow-xl backdrop-blur-md">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h3 class="font-bold text-white text-base flex items-center gap-2">
+                            <i class="fa-solid fa-shoe-prints text-amber-400"></i> Patrocínio de Material Esportivo
+                        </h3>
+                        <p class="text-xs text-slate-400">Fornecedor oficial de chuteiras do atleta</p>
+                    </div>
+                    <select id="sponsor-boots" class="bg-black/40 border border-white/10 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-amber-400 w-full md:w-56">
+                        <option value="none">Sem Patrocínio</option>
+                        <option value="nike">Nike</option>
+                        <option value="adidas">Adidas</option>
+                        <option value="puma">Puma</option>
+                        <option value="mizuno">Mizuno</option>
+                        <option value="under_armour">Under Armour</option>
+                        <option value="nb">New Balance</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- MÓDULO: RELACIONAMENTO COM A NAMORADA -->
+            <div data-bal-panel="profile" class="bal-panel bg-slate-900/60 border border-white/10 rounded-2xl p-5 shadow-xl backdrop-blur-md">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 border-b border-white/5 pb-3">
+                    <div>
+                        <h3 class="font-bold text-white text-base flex items-center gap-2">
+                            <i class="fa-solid fa-heart text-rose-400"></i> Relacionamento
+                        </h3>
+                        <p class="text-xs text-slate-400">Nível de relacionamento com sua namorada / cônjuge</p>
+                    </div>
+                    <button onclick="openRelationshipModal()" class="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-bold transition-all">
+                        <i class="fa-solid fa-pen mr-1"></i> Atualizar Relacionamento
+                    </button>
+                </div>
+                <div class="bg-black/30 p-4 rounded-xl border border-white/5 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-xs text-slate-400">Status</span>
+                            <strong id="display-relationship-status" class="block text-white text-sm mt-1">Solteiro</strong>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs text-slate-400">Nível</span>
+                            <span id="display-relationship-val" class="block text-sm font-black text-rose-400">0%</span>
+                        </div>
+                    </div>
+                    <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
+                        <div id="display-relationship-bar" class="bg-rose-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <div id="relationship-actions" class="flex flex-wrap gap-2 pt-1"></div>
+                </div>
+            </div>
+
+            <!-- MÓDULO: HISTÓRICO DE TRANSFERÊNCIAS E MERCADO -->
+            <div data-bal-panel="profile" class="bal-panel bg-slate-900/60 border border-white/10 rounded-2xl p-5 shadow-xl backdrop-blur-md">
+                <div class="flex justify-between items-center mb-4 border-b border-white/5 pb-3">
+                    <div>
+                        <h3 class="font-bold text-white text-base flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-emerald-400"></i> Mercado & Transferências
+                        </h3>
+                        <p class="text-xs text-slate-400">Histórico de negociações e cotação de mercado</p>
+                    </div>
+                    <button onclick="openTransferModal()" class="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold transition-all">
+                        <i class="fa-solid fa-plus mr-1"></i> Nova Transferência
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                    <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                        <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Valor de Mercado</span>
+                        <span id="market-value-display" class="text-sm font-bold font-mono text-emerald-400">€ 0M</span>
+                    </div>
+                    <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                        <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Multa Rescisória</span>
+                        <span id="release-clause-display" class="text-sm font-bold font-mono text-cyan-400">€ 0M</span>
+                    </div>
+                    <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                        <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Maior Transferência</span>
+                        <span id="highest-fee-display" class="text-sm font-bold font-mono text-purple-400">€ 0M</span>
+                    </div>
+                    <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                        <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Propostas Recusadas</span>
+                        <span id="rejected-offers-display" class="text-sm font-bold font-mono text-amber-400">0</span>
+                    </div>
+                </div>
+
+                <div id="transfer-history-list" class="space-y-2">
+                    <!-- Renderizado dinamicamente pelo JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- DASHBOARD DE ESTATÍSTICAS GERAIS -->
+        <div id="bal-stats-section" data-bal-panel="stats" class="bal-panel grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+            <div class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-center">
+                <span class="text-[10px] text-slate-400 uppercase font-bold block">Equipes</span>
+                <span id="qtd-clubes" class="text-lg font-black text-white">0</span>
+            </div>
+            <div class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-center">
+                <span class="text-[10px] text-slate-400 uppercase font-bold block">Jogos</span>
+                <span id="stat-jogos" class="text-lg font-black text-white">0</span>
+            </div>
+            <div class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-center">
+                <span class="text-[10px] text-slate-400 uppercase font-bold block">Vitórias</span>
+                <span id="stat-vitorias" class="text-lg font-black text-emerald-400">0</span>
+            </div>
+            <div class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-center">
+                <span class="text-[10px] text-slate-400 uppercase font-bold block">Empates</span>
+                <span id="stat-empates" class="text-lg font-black text-amber-400">0</span>
+            </div>
+            <div class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-center">
+                <span class="text-[10px] text-slate-400 uppercase font-bold block">Derrotas</span>
+                <span id="stat-derrotas" class="text-lg font-black text-rose-400">0</span>
+            </div>
+            <div class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-center">
+                <span id="label-dynamic-1" class="text-[10px] text-slate-400 uppercase font-bold block">Gols Totais</span>
+                <span id="stat-dynamic-1" class="text-lg font-black text-cyan-400">0</span>
+            </div>
+            <div class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-center">
+                <span id="label-dynamic-2" class="text-[10px] text-slate-400 uppercase font-bold block">Assistências</span>
+                <span id="stat-dynamic-2" class="text-lg font-black text-purple-400">0</span>
+            </div>
+            <div class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-center">
+                <span class="text-[10px] text-slate-400 uppercase font-bold block">Aproveit.</span>
+                <span id="stat-aproveitamento" class="text-lg font-black text-cyan-400">0%</span>
+            </div>
+            <div id="bal-yellow-stat" class="bg-slate-900/60 border border-amber-500/20 rounded-xl p-3 text-center">
+                <span class="text-[10px] text-amber-300 uppercase font-bold block">Amarelos</span>
+                <span id="stat-yellow-cards" class="text-lg font-black text-amber-300">0</span>
+            </div>
+            <div id="bal-red-stat" class="bg-slate-900/60 border border-rose-500/20 rounded-xl p-3 text-center">
+                <span class="text-[10px] text-rose-300 uppercase font-bold block">Vermelhos</span>
+                <span id="stat-red-cards" class="text-lg font-black text-rose-400">0</span>
+            </div>
+            <div id="bal-penalties-taken-stat" class="bg-slate-900/60 border border-cyan-500/20 rounded-xl p-3 text-center">
+                <span class="text-[10px] text-cyan-300 uppercase font-bold block">Pên. Batidos</span>
+                <span id="stat-penalties-taken" class="text-lg font-black text-cyan-300">0</span>
+            </div>
+            <div id="bal-penalties-scored-stat" class="bg-slate-900/60 border border-emerald-500/20 rounded-xl p-3 text-center">
+                <span class="text-[10px] text-emerald-300 uppercase font-bold block">Pên. Convertidos</span>
+                <span id="stat-penalties-scored" class="text-lg font-black text-emerald-400">0</span>
+            </div>
+            <div id="bal-penalties-missed-stat" class="bg-slate-900/60 border border-rose-500/20 rounded-xl p-3 text-center">
+                <span class="text-[10px] text-rose-300 uppercase font-bold block">Pên. Perdidos</span>
+                <span id="stat-penalties-missed" class="text-lg font-black text-rose-400">0</span>
+            </div>
+        </div>
+
+        <!-- HISTÓRICO DE CLUBES (EXCLUSIVO BECOME A LEGEND) -->
+        <div id="career-club-history" data-bal-panel="stats" class="bal-panel bg-slate-900/60 border border-white/10 rounded-2xl p-5 shadow-xl backdrop-blur-md space-y-4">
+            <div class="flex justify-between items-center border-b border-white/5 pb-3">
+                <h3 class="font-bold text-white text-base">Histórico de Passagens por Clubes</h3>
+                <button onclick="openModal()" class="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition-all"><i class="fa-solid fa-plus mr-1"></i> Adicionar Clube</button>
+            </div>
+            <div id="lista-clubes" class="space-y-3">
+                <!-- Renderizado via JS -->
+            </div>
+        </div>
+   
+
+        <!-- CENTRAL DE EVENTOS NARRATIVOS - BECOME A LEGEND -->
+        <section id="bal-events-section" data-bal-panel="events" class="bal-panel bg-slate-900/60 border border-violet-500/20 rounded-2xl p-5 shadow-xl backdrop-blur-md">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b border-white/5 pb-3 mb-4">
+                <div>
+                    <h3 class="font-bold text-white text-base flex items-center gap-2"><i class="fa-solid fa-bolt text-violet-400"></i> Eventos da Carreira</h3>
+                    <p class="text-xs text-slate-400 mt-1">Escolha uma categoria. A notícia é criada pelo sistema e suas decisões alteram seus relacionamentos.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="openBALRandomCategory()" class="px-3 py-1.5 rounded-lg bg-violet-500/15 hover:bg-violet-500/25 text-violet-300 border border-violet-500/30 text-xs font-bold"><i class="fa-solid fa-dice mr-1"></i> Evento aleatório</button>
+                    <button onclick="clearBALEvents()" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 border border-white/10 text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i> Histórico</button>
+                </div>
+            </div>
+            <div id="bal-event-relations" class="grid grid-cols-2 md:grid-cols-5 gap-2 mb-5"></div>
+            <div id="bal-event-categories" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5"></div>
+            <div id="bal-event-current" class="mb-5"></div>
+            <div class="border-t border-white/5 pt-4">
+                <div class="flex items-center justify-between mb-3"><h4 class="text-sm font-bold text-white"><i class="fa-solid fa-clock-rotate-left text-slate-400 mr-2"></i>Histórico de decisões</h4><span id="bal-event-count" class="text-[10px] text-slate-500"></span></div>
+                <div id="bal-event-history" class="space-y-2 max-h-[420px] overflow-y-auto"></div>
+            </div>
+        </section>
+
+        <!-- DADOS DO CLUBE ATUAL (EXCLUSIVO MASTER LIGA) -->
+        <div id="master-club-management" class="bg-slate-900/60 border border-cyan-500/20 rounded-2xl p-5 shadow-xl backdrop-blur-md space-y-4" style="display:none;">
+            <div class="flex justify-between items-center border-b border-white/5 pb-3">
+                <div>
+                    <h3 class="font-bold text-white text-base flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-cyan-400"></i> Clube Atual
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">Edite os dados do clube que você está comandando na Master Liga.</p>
+                </div>
+                <button onclick="openModal()" class="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition-all">
+                    <i class="fa-solid fa-plus mr-1"></i> Adicionar Clube
+                </button>
+            </div>
+            <div id="master-club-display" class="space-y-3"></div>
+        </div>
+
+
+
+        <footer class="text-center text-xs text-slate-500 py-5 border-t border-white/5 mt-2">
+            © 2027 eFootball PES 2027 • Direitos reservados • Criador: <strong class="text-cyan-400">Maurício Boy</strong>
+        </footer>
+    </div>
+
+    <!-- MODAIS DE INTERAÇÃO -->
+
+    <!-- MODAL: CRIAR CARREIRA -->
+    <div id="careerModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden justify-center items-center z-50 p-4">
+        <div class="bg-slate-900 border border-white/10 w-full max-w-sm rounded-2xl p-6 shadow-2xl space-y-4">
+            <h3 class="text-lg font-bold text-white">Criar Nova Carreira</h3>
+            <form onsubmit="handleCreateCareer(event)" class="space-y-4">
+                <div>
+                    <label class="text-xs text-slate-400 block mb-1">Nome da Carreira / Atleta</label>
+                    <input type="text" id="input-career-name" required placeholder="Ex: Cristiano Ronaldo BAL" class="w-full bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="closeCareerModal()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold">Criar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIRMAR EXCLUSÃO DE CARREIRA -->
+    <div id="deleteCareerModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden justify-center items-center z-50 p-4">
+        <div class="bg-slate-900 border border-white/10 w-full max-w-sm rounded-2xl p-6 shadow-2xl space-y-4 text-center">
+            <i class="fa-solid fa-triangle-exclamation text-rose-500 text-3xl"></i>
+            <h3 class="text-lg font-bold text-white">Deletar Carreira?</h3>
+            <p class="text-xs text-slate-400">Tem certeza que deseja excluir <strong id="delete-career-name" class="text-white"></strong>? Esta ação é irreversível.</p>
+            <div class="flex justify-center gap-2 pt-2">
+                <button type="button" onclick="closeDeleteCareerModal()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold">Cancelar</button>
+                <button type="button" onclick="confirmDeleteCareer()" class="px-4 py-2 rounded-lg bg-rose-500 hover:bg-rose-400 text-white text-xs font-bold">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PERFIL DO ATLETA -->
+    <div id="profileModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden justify-center items-center z-50 p-4">
+        <div class="bg-slate-900 border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+            <h3 class="text-lg font-bold text-white">Editar Perfil Pessoal & Staff</h3>
+            <form onsubmit="handleSaveProfile(event)" class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Idade Atual</label>
+                        <input type="number" min="15" max="50" id="input-prof-idade" placeholder="Ex: 21" class="w-full bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Nº da Camisa</label>
+                        <input type="number" min="1" max="99" id="input-prof-camisa" placeholder="Ex: 10" class="w-full bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Posição</label>
+                        <select id="input-prof-posicao" class="w-full bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+                            <option value="">Selecione a posição</option>
+                            <option value="Goleiro">Goleiro</option>
+                            <option value="Zagueiro">Zagueiro</option>
+                            <option value="Lateral Direito">Lateral Direito</option>
+                            <option value="Lateral Esquerdo">Lateral Esquerdo</option>
+                            <option value="Volante">Volante</option>
+                            <option value="Meia Central">Meia Central</option>
+                            <option value="Meia Ofensivo">Meia Ofensivo</option>
+                            <option value="Ponta Direita">Ponta Direita</option>
+                            <option value="Ponta Esquerda">Ponta Esquerda</option>
+                            <option value="Segundo Atacante">Segundo Atacante</option>
+                            <option value="Centroavante">Centroavante</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Nacionalidade</label>
+                        <input type="text" id="input-prof-nacionalidade" class="w-full bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Empresário</label>
+                        <input type="text" id="input-prof-empresario" class="w-full bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Nome do Pai</label>
+                        <input type="text" id="input-prof-pai" class="w-full bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Nome da Mãe</label>
+                        <input type="text" id="input-prof-mae" class="w-full bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Irmão(ã)</label>
+                        <input type="text" id="input-prof-irmao" class="w-full bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="text-xs text-slate-400 block mb-1">Namorada / Cônjuge</label>
+                        <input type="text" id="input-prof-namorada" class="w-full bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeProfileModal()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ATUALIZAR STATUS DO TÉCNICO -->
+    <div id="coachModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden justify-center items-center z-50 p-4">
+        <div class="bg-slate-900 border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+            <h3 class="text-lg font-bold text-white">Relacionamento com Técnico</h3>
+            <form onsubmit="handleSaveCoach(event)" class="space-y-4">
+                <div>
+                    <label class="text-xs text-slate-400 block mb-1">Confiança do Técnico (%)</label>
+                    <input type="number" min="0" max="100" id="input-coach-trust" class="w-full bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 block mb-1">Nível de Insatisfação (%)</label>
+                    <input type="number" min="0" max="100" id="input-dissatisfaction" class="w-full bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 block mb-1">Papel no Elenco</label>
+                    <select id="input-squad-role" class="w-full bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+                        <option value="Jovem Promessa">Jovem Promessa</option>
+                        <option value="Reserva">Reserva</option>
+                        <option value="Rotação de Elenco">Rotação de Elenco</option>
+                        <option value="Titular Importante">Titular Importante</option>
+                        <option value="Capitão / Estrela">Capitão / Estrela</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-2 pt-2">
+                    <input type="checkbox" id="input-request-transfer" class="rounded accent-cyan-500">
+                    <label for="input-request-transfer" class="text-xs text-slate-300">Solicitou pedido de transferência ao clube</label>
+                </div>
+                <button type="button" onclick="openCareerInteractionMenu('coach')" class="w-full rounded-lg border border-cyan-400/20 bg-cyan-400/5 px-3 py-2 text-xs font-bold text-cyan-200 hover:bg-cyan-400/10">Interagir com o técnico</button>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeCoachModal()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- MODAL: RELACIONAMENTO
+         O painel é montado dinamicamente pelo script.js. -->
+    <div id="relationshipModal" class="hidden"></div>
+
+    <!-- MODAL: REGISTRAR TRANSFERÊNCIA -->
+    <div id="transferModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden justify-center items-center z-50 p-4">
+        <div class="bg-slate-900 border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+            <h3 class="text-lg font-bold text-white">Registrar Movimentação de Mercado</h3>
+            <form onsubmit="handleSaveTransfer(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs text-slate-400 block mb-1">Origem -> Destino</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="input-transfer-from" placeholder="Clube Origem" required class="bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+                        <input type="text" id="input-transfer-to" placeholder="Clube Destino" required class="bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Ano / Temporada</label>
+                        <input type="text" id="input-transfer-season" placeholder="2027/28" required class="bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Tipo</label>
+                        <select id="input-transfer-type" class="bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 w-full">
+                            <option value="Definitiva">Venda Definitiva</option>
+                            <option value="Empréstimo">Empréstimo</option>
+                            <option value="Fim de Contrato">Fim de Contrato (Livre)</option>
+                            <option value="Proposta Recusada">Proposta Recusada</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Valor Taxa (€ milhões)</label>
+                        <input type="number" step="0.1" id="input-transfer-fee" placeholder="Ex: 45.5" class="bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 w-full">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Novo Valor Mercado (€M)</label>
+                        <input type="number" step="0.1" id="input-transfer-market-val" placeholder="Ex: 60" class="bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 w-full">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 block mb-1">Nova Multa Rescisória (€M)</label>
+                    <input type="number" step="0.1" id="input-transfer-clause" placeholder="Ex: 120" class="bg-black/40 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 w-full">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeTransferModal()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold">Adicionar Registro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: REGISTRAR / EDITAR CLUBE -->
+    <div id="editModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden justify-center items-center z-50 p-4">
+        <div class="bg-slate-900 border border-white/10 w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <h3 id="modal-title-text" class="text-lg font-bold text-white">Adicionar Clube</h3>
+            <form id="editForm" class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Clube</label>
+                        <input type="text" id="input-clube" required class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Temporada</label>
+                        <input type="text" id="input-temporada" placeholder="Ex: 2026/27" required class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label id="modal-label-contrato" class="text-xs text-slate-400 block mb-1">Duração Contrato</label>
+                        <input type="text" id="input-contrato" placeholder="Ex: 3 anos" class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div id="container-tempo-permanencia">
+                        <label class="text-xs text-slate-400 block mb-1">Tempo no Clube</label>
+                        <input type="text" id="input-tempo-clube" placeholder="Ex: 2 anos, 6 meses" class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Salário</label>
+                        <input type="text" id="input-salario" placeholder="Ex: 500.000" class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-4 gap-2">
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Jogos</label>
+                        <input type="number" id="input-jogos" min="0" class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Vitórias</label>
+                        <input type="number" id="input-vitorias" min="0" class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Empates</label>
+                        <input type="number" id="input-empates" min="0" class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Derrotas</label>
+                        <input type="number" id="input-derrotas" min="0" class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label id="modal-label-1" class="text-xs text-slate-400 block mb-1">Gols</label>
+                        <input type="number" id="input-dynamic-1" min="0" class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label id="modal-label-2" class="text-xs text-slate-400 block mb-1">Assistências</label>
+                        <input type="number" id="input-dynamic-2" min="0" class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                </div>
+                <div id="container-cartoes-clube" class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-amber-300 block mb-1">Cartões Amarelos <span class="text-[10px] text-slate-500">(Become a Legend)</span></label>
+                        <input type="number" id="input-yellow-cards" min="0" value="0" class="w-full bg-black/40 border border-amber-500/20 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-amber-400">
+                    </div>
+                    <div>
+                        <label class="text-xs text-rose-300 block mb-1">Cartões Vermelhos <span class="text-[10px] text-slate-500">(Become a Legend)</span></label>
+                        <input type="number" id="input-red-cards" min="0" value="0" class="w-full bg-black/40 border border-rose-500/20 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-rose-400">
+                    </div>
+                </div>
+                <div id="container-penaltis-clube" class="grid grid-cols-3 gap-2">
+                    <div>
+                        <label class="text-xs text-cyan-300 block mb-1">Pênaltis Batidos <span class="text-[10px] text-slate-500">(BAL)</span></label>
+                        <input type="number" id="input-penalties-taken" min="0" value="0" class="w-full bg-black/40 border border-cyan-500/20 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-cyan-400">
+                    </div>
+                    <div>
+                        <label class="text-xs text-emerald-300 block mb-1">Convertidos <span class="text-[10px] text-slate-500">(BAL)</span></label>
+                        <input type="number" id="input-penalties-scored" min="0" value="0" class="w-full bg-black/40 border border-emerald-500/20 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-emerald-400">
+                    </div>
+                    <div>
+                        <label class="text-xs text-rose-300 block mb-1">Perdidos <span class="text-[10px] text-slate-500">(BAL)</span></label>
+                        <input type="number" id="input-penalties-missed" min="0" value="0" class="w-full bg-black/40 border border-rose-500/20 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-rose-400">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 block mb-1">Títulos Conquistados (Separe por vírgula)</label>
+                    <input type="text" id="input-titulos" placeholder="Ex: Liga, Copa, Champions League" class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold">Salvar Clube</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: LIGAS E IDENTIDADE VISUAL -->
+    <div id="leagueModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 p-4">
+        <div class="w-full max-w-xl rounded-2xl border border-white/10 bg-slate-900 p-5 shadow-2xl">
+            <div class="flex items-center justify-between gap-3 mb-4"><h3 class="text-lg font-black text-white"><i class="fa-solid fa-earth-europe text-violet-300 mr-2"></i>Ligas e competições</h3><button onclick="closeLeagueSelector()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button></div>
+            <p class="text-xs text-slate-400 mb-4">Escolha uma liga para aplicar suas cores ao fundo do site. A seleção fica salva nesta carreira.</p>
+            <label for="league-select" class="block text-xs text-slate-400 mb-1">Competição</label>
+            <select id="league-select" onchange="previewLeagueTheme(this.value)" class="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-sm text-white mb-4"></select>
+            <div id="league-preview" class="league-preview rounded-xl border border-white/10 p-4 mb-4"><div class="text-xs uppercase tracking-widest text-white/60">Prévia do tema</div><strong id="league-preview-name" class="block text-xl font-black text-white mt-1">Selecione uma liga</strong><p id="league-preview-meta" class="text-xs text-white/70 mt-2">Competição nacional</p></div>
+            <div class="flex justify-end gap-2"><button onclick="closeLeagueSelector()" class="px-4 py-2 rounded-lg bg-white/5 text-slate-300 text-xs font-bold">Cancelar</button><button onclick="saveLeagueSelection()" class="px-4 py-2 rounded-lg bg-violet-500 hover:bg-violet-400 text-white text-xs font-bold"><i class="fa-solid fa-check mr-1"></i>Aplicar liga</button></div>
+        </div>
+    </div>
+
+    <!-- MODAL: MOEDA DA CARREIRA -->
+    <div id="currencyModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden justify-center items-center z-[60] p-4">
+        <div class="bg-slate-900 border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+            <div>
+                <h3 class="text-lg font-bold text-white">Moeda da Carreira</h3>
+                <p class="text-xs text-slate-400 mt-1">Escolha a moeda usada para salários e valores financeiros desta carreira.</p>
+            </div>
+            <div class="grid grid-cols-1 gap-2">
+                <label class="flex items-center gap-3 bg-black/30 border border-white/10 rounded-xl p-3 cursor-pointer hover:border-cyan-500/40">
+                    <input type="radio" name="career-currency" value="BRL" class="accent-cyan-500">
+                    <span class="text-white font-bold"> Real brasileiro</span><span class="ml-auto text-slate-400">R$</span>
+                </label>
+                <label class="flex items-center gap-3 bg-black/30 border border-white/10 rounded-xl p-3 cursor-pointer hover:border-cyan-500/40">
+                    <input type="radio" name="career-currency" value="EUR" class="accent-cyan-500">
+                    <span class="text-white font-bold"> Euro</span><span class="ml-auto text-slate-400">€</span>
+                </label>
+                <label class="flex items-center gap-3 bg-black/30 border border-white/10 rounded-xl p-3 cursor-pointer hover:border-cyan-500/40">
+                    <input type="radio" name="career-currency" value="USD" class="accent-cyan-500">
+                    <span class="text-white font-bold"> Dólar americano</span><span class="ml-auto text-slate-400">US$</span>
+                </label>
+            </div>
+            <p class="text-[11px] text-slate-500">A troca não altera automaticamente os números já cadastrados; ela muda a moeda usada na carreira para evitar conversões inesperadas.</p>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeCurrencyModal()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold">Cancelar</button>
+                <button onclick="saveCareerCurrency()" class="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold">Salvar Moeda</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIGURAÇÃO DO GOOGLE LOGIN -->
+    <script>window.GOOGLE_CLIENT_ID = {{ google_client_id|tojson }};</script>
+
+    <!-- SCRIPT DA APLICAÇÃO -->
+    <script src="static/js/core.js?v=1.6-central-fix3"></script>
+    <script src="static/js/career.js?v=1.6-central-fix3"></script>
+    <script src="static/js/features.js?v=1.6-central-fix3"></script>
+</body>
+</html>
